@@ -6,6 +6,9 @@ import { Container } from 'react-bootstrap'
 import Background from './components/Background/Background'
 import TicTacToe from './components/TicTacToe/TicTacToe';
 import GameStatus from './components/GameStatus/GameStatus';
+import MultiplayerProvider from './components/MutiplayerProvider/MultiplayerProvider';
+import GameChat from './components/GameChat/GameChat';
+import MutiplayerTicTacToe from './components/MultiplayerTicTacToe/MultiplayerTicTacToe';
 
 
 function App() {
@@ -17,7 +20,13 @@ function App() {
 			<Container className="p-4">
 
 
-				<TicTacToe />
+				{/* <TicTacToe /> */}
+
+				<MultiplayerProvider>
+					
+					<MutiplayerTicTacToe></MutiplayerTicTacToe>
+					
+				</MultiplayerProvider>
 
 			</Container>
 
