@@ -1,26 +1,29 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+
 
 import Background from './components/Background/Background';
 import TicTacToe from './components/TicTacToe/TicTacToe';
+import { MultiplayerContext } from './components/Multiplayer/MultiplayerProvider';
+import { useContext } from 'react';
 
 
 
 function App() {
 
+	const {isConnected, room, createGame, joinGame, userTurn} = useContext(MultiplayerContext);
 
-	return (
-		<div className="App">
-			<Background style={{minWidth: '100vw', minHeight: '100vh'}}>
-			
-				<div style={{display: 'flow-root'}}>
+	return (<div className="App" style={{display: 'flow-root'}}>
 
-					<TicTacToe />
-				</div>
-
-			</Background>	
+		<div className="bg-light d-flex">
+			<div>Room: {room}</div>
+			<div>Conectado: {isConnected.toString()}</div>
+			<div>Turn: {userTurn}</div>
+			<button onClick={() => createGame()}>create room</button>
+			<button onClick={() => joinGame('1812')}>join room</button>
 		</div>
-	)
+
+		<TicTacToe />
+
+	</div>)
 }
 
 export default App

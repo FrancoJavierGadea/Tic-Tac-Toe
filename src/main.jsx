@@ -1,10 +1,27 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+import App from './App'
+import Background from './components/Background/Background';
+import MultiplayerProvider from './components/Multiplayer/MultiplayerProvider';
+
+ReactDOM.createRoot(document.getElementById('root')).render(<>
+
+
+
+		<Background style={{minWidth: '100vw', minHeight: '100vh'}}>
+			<MultiplayerProvider>
+
+				<App />
+
+			</MultiplayerProvider>
+		</Background>
+
+
+
+
+</>)

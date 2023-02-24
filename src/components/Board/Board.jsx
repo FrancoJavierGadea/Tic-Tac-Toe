@@ -15,14 +15,22 @@ const StyledBoard = styled.div`
     opacity: ${props => props.disabled ? '.7' : '1'};
 `;
 
-function Board({values, cellClick, disabled}) {
+function Board({values, cellClick = () => {}, disabled}) {
+
+    const handleClick = (cell) => {
+
+        if(!disabled){
+
+            cellClick(cell);
+        }
+    }
 
     return (<StyledBoard disabled={disabled}>
 
         {
             values?.map((value, index) => {
 
-                return <Cell value={value} index={index} key={'cell-' + index} onClick={cellClick} />
+                return <Cell value={value} index={index} key={'cell-' + index} onClick={handleClick} />
             })
         }
 
