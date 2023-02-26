@@ -8,7 +8,7 @@ import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
 function TicTacToe() {
 
-    const {userTurn, startGame, listenStartGame, sendGameMove, listenGameMoves} = useContext(MultiplayerContext);
+    const {playerTurn, startGame, listenStartGame, sendGameMove, listenGameMoves,} = useContext(MultiplayerContext);
 
     const [board, setBoard] = useState(new Array(9).fill(null));
 
@@ -30,6 +30,7 @@ function TicTacToe() {
 
         const gameMovesSub = listenGameMoves().subscribe((value) => {
 
+            console.log('Movimiento recivido: ', value);
             setBoard(value.board);
         });
 
@@ -97,7 +98,7 @@ function TicTacToe() {
 
         <GameStatus turn={turn} winner={winner} />
 
-        <Board values={board} cellClick={handleCellClick} disabled={!turn || turn !== userTurn}/>
+        <Board values={board} cellClick={handleCellClick} disabled={!turn || !playerTurn || turn !== playerTurn}/>
 
     </div>);
 }

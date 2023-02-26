@@ -1,28 +1,28 @@
 
-
-import Background from './components/Background/Background';
 import TicTacToe from './components/TicTacToe/TicTacToe';
 import { MultiplayerContext } from './components/Multiplayer/MultiplayerProvider';
 import { useContext } from 'react';
+import GameControls from './components/GameControls/GameControls';
+import CreateGameForm from './components/CreateGameForm/CreateGameForm';
+import Notifications from './components/Nofitications/Notifications';
 
 
 
 function App() {
 
-	const {isConnected, room, createGame, joinGame, userTurn} = useContext(MultiplayerContext);
+	const {room} = useContext(MultiplayerContext);
 
 	return (<div className="App" style={{display: 'flow-root'}}>
+		{
+			!room ? <CreateGameForm /> : <>
 
-		<div className="bg-light d-flex">
-			<div>Room: {room}</div>
-			<div>Conectado: {isConnected.toString()}</div>
-			<div>Turn: {userTurn}</div>
-			<button onClick={() => createGame()}>create room</button>
-			<button onClick={() => joinGame('1812')}>join room</button>
-		</div>
+				<TicTacToe />
 
-		<TicTacToe />
+				<GameControls />
+			</>
+		}
 
+		<Notifications />
 	</div>)
 }
 

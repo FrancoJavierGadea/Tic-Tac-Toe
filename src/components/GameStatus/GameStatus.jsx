@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { TURNS } from "../../utils/GameLogic";
 import confetti from "canvas-confetti";
+import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
 const StyledDiv = styled.div`
 
@@ -37,6 +38,8 @@ const StyledDiv = styled.div`
 
 function GameStatus({className, turn = TURNS.O, winner}) {
 
+    const { listenStartGame } = useContext(MultiplayerContext);
+
     const [gamesX, setGamesX] = useState(0);
 
     const [gamesO, setGamesO] = useState(0);
@@ -53,6 +56,22 @@ function GameStatus({className, turn = TURNS.O, winner}) {
         }
 
     }, [winner]);
+
+    useEffect(() => {
+        
+        const startGameSub = listenStartGame().subscribe((value) => {
+
+            if(value.firstGame){
+                setGamesX(0);
+                setGamesO(0);
+            }
+        });
+
+        return () => {
+            startGameSub.unsubscribe();
+        };
+
+    }, []);
 
     return (<StyledDiv className={className}>
 

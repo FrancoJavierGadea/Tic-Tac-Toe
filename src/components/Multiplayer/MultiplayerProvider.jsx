@@ -2,7 +2,8 @@ import { createContext, useCallback, useEffect, useMemo, useState } from "react"
 import { io } from "socket.io-client";
 import { TURNS } from "../../utils/GameLogic";
 import { Observable } from "rxjs";
-import { ConnectionError, StartGameError } from "../../Errors/Errors";
+import { ConnectionError, JoinGameError, StartGameError } from "../../Errors/Errors";
+import { toast } from "react-toastify";
 
 export const MultiplayerContext = createContext();
 
@@ -14,11 +15,30 @@ function MultiplayerProvider({children}) {
 
     const [room, setRoom] = useState(null);
 
-    const [userTurn, setUserTurn] = useState(null);
+    const [playerTurn, setPlayerTurn] = useState(null);
 
     const [player, setPlayer] = useState(null);
 
     const [errors, setErrors] = useState([]);
+
+    const waitingPlayerNotification = () => {
+
+        toast.promise(new Promise((resolve, reject) => {
+
+            socket.on('joined-game', (response) => {
+
+                if(response.ok) resolve(); else reject();
+            });
+
+        }), { 
+            pending: 'Esperando juagador...',
+            success: 'Juagador conectado',
+            reject: 'Error al conectar'
+        }, { 
+            autoClose: 2000,
+            hideProgressBar: true
+        });
+    }
 
     useEffect(() => {
 
@@ -31,19 +51,40 @@ function MultiplayerProvider({children}) {
         socket.on('disconnect', () => {
 
             setIsConnected(false);
+            setErrors(oldErrors => [...oldErrors, new ConnectionError('Desconectado')]);
         });
 
         socket.on('connect_error', (err) => {
 
-            setErrors(oldErrors => [...oldErrors, new ConnectionError(err.message)]);
+            setErrors(oldErrors => [...oldErrors, new ConnectionError('No se puede conectar con el servidor')]);    
         });
 
         socket.on('joined-game', (response) => {
 
             if(response.ok){
 
-                setUserTurn(TURNS.inverseTurn(response.data.turn));
-                setPlayer('player 2');
+                setPlayerTurn(TURNS.inverseTurn(response.data.turn)); 
+            }
+        });
+
+        socket.on('disconnect-player', (response) => {
+
+            waitingPlayerNotification();
+
+            setErrors(oldErrors => [...oldErrors, new ConnectionError(response.message)]);
+
+            setPlayerTurn(null);
+            
+            if(response.data.player === 'player 1'){
+
+                //* If player 1 disconnect: player 2 --> player 1
+                socket.emit('update-player', {player: 'player 1'}, (response) => {
+
+                    if(response.ok){
+
+                        setPlayer('player 1');
+                    }
+                });
             }
         });
     
@@ -56,15 +97,17 @@ function MultiplayerProvider({children}) {
 
     }, [socket]);
     
+
     const createGame = () => {
 
-        setPlayer('player 1');
+        waitingPlayerNotification();
 
         socket.emit('create-game', (response) => {
 
             if(response.ok){
 
                 setRoom(response.data.room);
+                setPlayer('player 1');
             }
             else {
 
@@ -85,21 +128,45 @@ function MultiplayerProvider({children}) {
                 console.log(response);
 
                 setRoom(room);
-                setUserTurn(turn);
+                setPlayerTurn(turn);
+                setPlayer('player 2');
+            }
+            else {
+                setErrors(oldErrors => [...oldErrors, new JoinGameError(response.message)]);
             }
         });  
     };
 
+    const leaveGame = () => {
 
-    const startGame = () => {
+        socket.emit('leave-game', (response) => {
+
+            if(response.ok){
+
+                setRoom(null);
+                setPlayerTurn(null);
+                setPlayer(null);
+                toast.dismiss();
+            }
+        });
+    }
+
+
+    const startGame = (options = {}) => {
 
         const turn = TURNS.random();
 
-        socket.emit('start-game', {room, turn}, (response) => {
+        const {firstGame} = options;
+
+        socket.emit('start-game', {turn, firstGame}, (response) => {
 
             if(response.ok){
 
                 console.log('start game !', response);
+            }
+            else {
+
+                setErrors(oldErrors => [...oldErrors, new StartGameError(response.message)]);
             }
         });
     }
@@ -131,7 +198,7 @@ function MultiplayerProvider({children}) {
 
     const sendGameMove = (board) => {
 
-        socket.emit('send-game-move', {room, board}, (response) => {
+        socket.emit('send-game-move', {board}, (response) => {
 
             console.log(response);
         });
@@ -166,21 +233,23 @@ function MultiplayerProvider({children}) {
     //* Automatic start game
     useEffect(() => {
 
-        if(room && userTurn && player === 'player 2') startGame();
+        if(room && playerTurn && player === 'player 1') startGame({firstGame: true});
 
-    }, [room, userTurn, player]);
+    }, [room, playerTurn, player]);
     
 
     const data = {
         isConnected,
         room,
-        userTurn,
+        playerTurn,
+        player,
         createGame,
         joinGame,
         startGame,
         listenStartGame,
         sendGameMove,
         listenGameMoves,
+        leaveGame,
         errors
     };
 

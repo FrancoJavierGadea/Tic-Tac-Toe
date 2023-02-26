@@ -16,3 +16,12 @@ export class StartGameError extends Error {
     }
 }
 
+
+export class JoinGameError extends Error {
+
+    constructor(message){
+        super(message);
+        this.name = "JoinGameError";
+    }
+}
+
