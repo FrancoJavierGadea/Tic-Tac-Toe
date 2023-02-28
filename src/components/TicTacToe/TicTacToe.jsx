@@ -21,17 +21,17 @@ function TicTacToe() {
 
     useEffect(() => {
         
-        const startGameSub = listenStartGame().subscribe((value) => {
+        const startGameSub = listenStartGame().subscribe(({data}) => {
 
-            console.log(value.turn)
+            console.log(data.turn)
 
-            resetGame(value.turn);
+            resetGame(data.turn);
         });
 
-        const gameMovesSub = listenGameMoves().subscribe((value) => {
+        const gameMovesSub = listenGameMoves().subscribe(({data}) => {
 
-            console.log('Movimiento recivido: ', value);
-            setBoard(value.board);
+            console.log('Movimiento recivido: ', data);
+            setBoard(data.board);
         });
 
         return () => {

@@ -59,9 +59,9 @@ function GameStatus({className, turn = TURNS.O, winner}) {
 
     useEffect(() => {
         
-        const startGameSub = listenStartGame().subscribe((value) => {
+        const startGameSub = listenStartGame().subscribe(({data}) => {
 
-            if(value.firstGame){
+            if(data.firstGame){
                 setGamesX(0);
                 setGamesO(0);
             }

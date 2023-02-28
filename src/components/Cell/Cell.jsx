@@ -1,10 +1,12 @@
 import styled from "styled-components";
+import { RoughNotation } from "react-rough-notation";
 
 const StyledCell = styled.div`
 
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 
     background-color: #2D2D6B;
     font-size: 28pt;
@@ -15,6 +17,12 @@ const StyledCell = styled.div`
     }
 `;
 
+const StyledRoughNotation = styled(RoughNotation)`
+
+    width: 100%;
+    height: 100%;
+`
+
 
 function Cell({value, index, onClick = () => {}}) {
 
@@ -24,11 +32,12 @@ function Cell({value, index, onClick = () => {}}) {
     }
 
     return (<StyledCell className="border" onClick={handleClick} >
-
-        { value === 'o' && <i className="bi bi-circle text-success"></i> }
-
-        { value === 'x' && <i className="bi bi-x-lg text-danger"></i> }
-
+        {
+            value === 'x' && <StyledRoughNotation type="crossed-off" show={true} color="#dc3545" strokeWidth={3}/>
+        }
+        {
+            value === 'o' && <StyledRoughNotation type="circle" show={true} color="#198754" strokeWidth={3}/>
+        }
     </StyledCell>);
 }
 

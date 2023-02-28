@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
@@ -29,26 +30,54 @@ const StyledCreateGameButton = styled(Button)`
 
 function CreateGameForm() {
 
-    const {createGame, joinGame} = useContext(MultiplayerContext);
+    const {createGame, joinGame, playerName} = useContext(MultiplayerContext);
 
     const [roomCode, setRoomCode] = useState('');
+
+    const [name, setName] = useState(playerName || '');
+
+    const create = () => {
+
+        if(name === '') return toast.info('Ingresa un nombre');
+
+        createGame(name);
+    }
+
+    const join = () => {
+
+        if(name === '') return toast.info('Ingresa un nombre');
+
+        joinGame(roomCode, name);
+    }
 
     return (<StyledDiv>
 
         <div className="main rounded">
 
-            <div className="border-bottom border-info">
+            <div>
+                <h1>Tic Tac Toe</h1>
+            </div>
+
+            <div className="border-bottom border-info pt-4">
+                <h3>Ingresa un nombre</h3>
+
+                <div className="d-flex py-4">
+                    <Form.Control type="text" value={name} onChange={({target: {value}}) => setName(value)} />
+                </div>
+            </div>
+
+            <div className="border-bottom border-info pt-4">
                 <h3>Unirse a un Juego</h3>
 
                 <div className="d-flex py-4">
                     <Form.Control type="text" value={roomCode} onChange={({target: {value}}) => setRoomCode(value)} />
 
-                    <StyledJoinGameButton variant="secondary" title="Unirse a una sala" disabled={!roomCode} onClick={() => joinGame(roomCode)}>Join Game</StyledJoinGameButton>
+                    <StyledJoinGameButton variant="secondary" title="Unirse a una sala" disabled={!roomCode} onClick={() => join()}>Join Game</StyledJoinGameButton>
                 </div>
             </div>
 
             <div className="pt-3">
-                <StyledCreateGameButton variant="success" title="Crear juego" disabled={roomCode !== ''} onClick={() => createGame()}>Create Game</StyledCreateGameButton>
+                <StyledCreateGameButton variant="success" title="Crear juego" disabled={roomCode !== ''} onClick={() => create()}>Create Game</StyledCreateGameButton>
             </div>
         </div>
 
