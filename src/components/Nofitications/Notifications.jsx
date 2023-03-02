@@ -53,9 +53,9 @@ function Notifications() {
     //? shoot when player 2 disconnect
     useEffect(() => {
       
-        const sub = listenDisconectPlayer().subscribe({
+        const sub = listenDisconectPlayer().subscribe(({data, message}) => {
 
-            error: () => waitingPlayerNotification()
+            if(data.player === 'player 2') waitingPlayerNotification();
         });
 
         return () => sub.unsubscribe();
@@ -64,7 +64,7 @@ function Notifications() {
     
     
 
-    return (<ToastContainer />);
+    return (<ToastContainer limit={4} />);
 }
 
 export default Notifications;

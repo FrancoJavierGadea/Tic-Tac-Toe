@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import MainAnimation from "../MainAnimation/MainAnimation";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
 const StyledDiv = styled.div`
@@ -38,14 +39,14 @@ function CreateGameForm() {
 
     const create = () => {
 
-        if(name === '') return toast.info('Ingresa un nombre');
+        if(name === '') return toast.info('Ingresa un nombre', {autoClose: 2000, hideProgressBar: true});
 
         createGame(name);
     }
 
     const join = () => {
 
-        if(name === '') return toast.info('Ingresa un nombre');
+        if(name === '') return toast.info('Ingresa un nombre', {autoClose: 2000, hideProgressBar: true});
 
         joinGame(roomCode, name);
     }
@@ -54,30 +55,28 @@ function CreateGameForm() {
 
         <div className="main rounded">
 
-            <div>
+            <div className="py-2">
                 <h1>Tic Tac Toe</h1>
             </div>
 
-            <div className="border-bottom border-info pt-4">
-                <h3>Ingresa un nombre</h3>
+            <MainAnimation />
 
+            <div className="border-bottom border-info pt-2">
                 <div className="d-flex py-4">
-                    <Form.Control type="text" value={name} onChange={({target: {value}}) => setName(value)} />
+                    <Form.Control type="text" value={name} onChange={({target: {value}}) => setName(value)} placeholder="Ingresa un nombre"/>
                 </div>
             </div>
 
-            <div className="border-bottom border-info pt-4">
-                <h3>Unirse a un Juego</h3>
-
+            <div className="border-bottom border-info pt-2">
                 <div className="d-flex py-4">
-                    <Form.Control type="text" value={roomCode} onChange={({target: {value}}) => setRoomCode(value)} />
+                    <Form.Control type="text" value={roomCode} onChange={({target: {value}}) => setRoomCode(value)} placeholder="Ingresa el codigo de la sala" />
 
-                    <StyledJoinGameButton variant="secondary" title="Unirse a una sala" disabled={!roomCode} onClick={() => join()}>Join Game</StyledJoinGameButton>
+                    <StyledJoinGameButton variant="secondary" title="Unirse a una sala" disabled={!roomCode} onClick={() => join()}>Unirse</StyledJoinGameButton>
                 </div>
             </div>
 
             <div className="pt-3">
-                <StyledCreateGameButton variant="success" title="Crear juego" disabled={roomCode !== ''} onClick={() => create()}>Create Game</StyledCreateGameButton>
+                <StyledCreateGameButton variant="success" title="Crear juego" disabled={roomCode !== ''} onClick={() => create()}>Crear Juego</StyledCreateGameButton>
             </div>
         </div>
 

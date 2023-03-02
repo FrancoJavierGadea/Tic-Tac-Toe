@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Button } from "react-bootstrap";
 import styled from "styled-components";
+import Chat from "../Chat/Chat";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
 const StyledGameControls = styled.div`
@@ -8,6 +9,7 @@ const StyledGameControls = styled.div`
     position: fixed;
     top: 0; bottom: 0;
     z-index: 2000;
+    width: 100vw;
 
     .room-info {
         position: absolute;
@@ -129,6 +131,8 @@ function GameControls() {
             { playerTurn === 'o' && <i className="bi bi-circle text-success"></i> }
             { playerTurn === 'x' && <i className="bi bi-x-lg text-danger"></i> }
         </div>
+
+        <Chat />
 
     </StyledGameControls>);
 }

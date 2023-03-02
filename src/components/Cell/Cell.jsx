@@ -6,10 +6,9 @@ const StyledCell = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
 
     background-color: #2D2D6B;
-    font-size: 28pt;
+
     box-shadow: -0px 0px 5px 1px rgba(255,255,255,.5) inset;
 
     &:hover {
@@ -24,14 +23,14 @@ const StyledRoughNotation = styled(RoughNotation)`
 `
 
 
-function Cell({value, index, onClick = () => {}}) {
+function Cell({value, index, onClick = () => {}, padding = '20px', size = '28pt'}) {
 
     const handleClick = () => {
 
         onClick(index);
     }
 
-    return (<StyledCell className="border" onClick={handleClick} >
+    return (<StyledCell className="border" onClick={handleClick} style={{padding, fontSize: size}}>
         {
             value === 'x' && <StyledRoughNotation type="crossed-off" show={true} color="#dc3545" strokeWidth={3}/>
         }

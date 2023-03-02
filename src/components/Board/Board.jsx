@@ -12,7 +12,10 @@ const StyledBoard = styled.div`
     justify-content: center;
     align-content: center;
 
-    opacity: ${props => props.disabled ? '.7' : '1'};
+    position: relative;
+    z-index: 5000;
+
+    opacity: ${props => props.disabled ? '.8' : '1'};
 `;
 
 function Board({values, cellClick = () => {}, disabled}) {

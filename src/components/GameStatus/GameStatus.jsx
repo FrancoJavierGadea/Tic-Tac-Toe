@@ -10,6 +10,8 @@ const StyledDiv = styled.div`
     margin: 20px auto;
     display: flex;
     justify-content: center;
+    position: relative;
+    z-index: 5000;
 
     .brand {
         display: flex;

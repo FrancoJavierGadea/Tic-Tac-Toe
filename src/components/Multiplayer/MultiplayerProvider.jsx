@@ -30,7 +30,6 @@ function MultiplayerProvider({children}) {
 
         socket.on('connect', () => {
 
-            console.log('Conectado');
             setIsConnected(true);
         });
     
@@ -41,6 +40,7 @@ function MultiplayerProvider({children}) {
             setPlayer(null);
             setPlayerTurn(null);
             setErrors(oldErrors => [...oldErrors, new ConnectionError('Desconectado')]);
+            toast.dismiss();
         });
 
         socket.on('connect_error', (err) => {
@@ -53,22 +53,18 @@ function MultiplayerProvider({children}) {
             setPlayerTurn(TURNS.inverseTurn(data.turn)); 
         });
       
-        listen('disconnect-player').subscribe({
-            error: ({data, message}) => {
+        listen('disconnect-player').subscribe(({data, message}) => {
 
-                console.log(message, data.player);
+            setErrors(oldErrors => [...oldErrors, new ConnectionError(message)]);
+            setPlayerTurn(null);
 
-                setErrors(oldErrors => [...oldErrors, new ConnectionError(message)]);
-                setPlayerTurn(null);
+            if(data.player === 'player 1'){
 
-                if(data.player === 'player 1'){
+                //* If player 1 disconnect: player 2 --> player 1
+                emit('update-player', {player: 'player 1'}).subscribe(() => {
 
-                    //* If player 1 disconnect: player 2 --> player 1
-                    emit('update-player', {player: 'player 1'}).subscribe(() => {
-    
-                        setPlayer('player 1');
-                    });
-                }
+                    setPlayer('player 1');
+                });
             }
         });
 
@@ -82,9 +78,9 @@ function MultiplayerProvider({children}) {
 
     const createGame = (name) => {
 
-        emit('create-game', {name}).subscribe(({room}, message) => {
+        emit('create-game', {name}).subscribe(({data}) => {
 
-            setRoom(room);
+            setRoom(data.room);
             setPlayer('player 1');
             setPlayerName(name);
         });
@@ -113,7 +109,7 @@ function MultiplayerProvider({children}) {
 
     const leaveGame = () => {
 
-        emit('leave-game').subscribe(() => {
+        emit('leave-game').subscribe((value) => {
 
             setRoom(null);
             setPlayerTurn(null);
@@ -132,7 +128,7 @@ function MultiplayerProvider({children}) {
         emit('start-game', {turn, firstGame}).subscribe({
             next: () => {
 
-                console.log('start game !');
+                //console.log('start game !');
             },
             error: (err) => {
 
@@ -153,7 +149,18 @@ function MultiplayerProvider({children}) {
 
         emit('send-game-move', {board}).subscribe(() => {
 
-            console.log('Movimiento enviado');
+            //console.log('Movimiento enviado');
+        });
+    }
+
+    const sendChatMessage = (message) => {
+
+        emit('send-message', {message, name: playerName, player}).subscribe({
+
+            next: ({message}) => {
+
+                //console.log(message);
+            } 
         });
     }
 
@@ -170,6 +177,11 @@ function MultiplayerProvider({children}) {
     const listenDisconectPlayer = () => {
 
         return listen('disconnect-player');
+    }
+
+    const listenChatMessages = () => {
+
+        return listen('receive-message');
     }
 
     //* Automatic start game
@@ -195,6 +207,8 @@ function MultiplayerProvider({children}) {
         listenJoinedGame,
         listenDisconectPlayer,
         leaveGame,
+        sendChatMessage,
+        listenChatMessages,
         errors
     };
 

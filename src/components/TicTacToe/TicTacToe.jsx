@@ -5,6 +5,7 @@ import { checkGame, TURNS } from "../../utils/GameLogic";
 import GameoverModal from "../Modals/GameoverModal/GameoverModal";
 import GameStatus from "../GameStatus/GameStatus";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
+import { saveGame } from "../../utils/saveGame";
 
 function TicTacToe() {
 
@@ -18,19 +19,18 @@ function TicTacToe() {
 
     const [winner, setWinner] = useState(null);
 
+    const [game, setGame] = useState([]);
+
 
     useEffect(() => {
         
         const startGameSub = listenStartGame().subscribe(({data}) => {
-
-            console.log(data.turn)
 
             resetGame(data.turn);
         });
 
         const gameMovesSub = listenGameMoves().subscribe(({data}) => {
 
-            console.log('Movimiento recivido: ', data);
             setBoard(data.board);
         });
 
@@ -47,6 +47,7 @@ function TicTacToe() {
         setTurn(turn);
         setGameover(false);
         setWinner(null);
+        setGame([]);
     }
 
     useEffect(() => {
@@ -61,6 +62,8 @@ function TicTacToe() {
         setWinner(gameStatus.winner);
         
         setTurn(oldTurn => TURNS.inverseTurn(oldTurn));
+
+        setGame(oldGame => [...oldGame, board]);
       
     }, [board]);
 
@@ -68,7 +71,7 @@ function TicTacToe() {
       
         if(gameover){
 
-            console.log('Winner: ', winner);
+            saveGame(game);
         }
      
     }, [gameover]);

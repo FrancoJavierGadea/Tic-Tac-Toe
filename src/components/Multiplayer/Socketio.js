@@ -2,8 +2,8 @@ import { Observable, throwError } from "rxjs";
 import { io } from "socket.io-client";
 
 
+//const socket = io('https://tic-tac-toe-ntm9.onrender.com/').connect();
 const socket = io('http://localhost:3000').connect();
-
 
 function listen(event){
 
@@ -42,7 +42,7 @@ function emit(event, data = {}){
 
             if(response.ok){
 
-                subscriber.next(response.data, response.message);
+                subscriber.next({data: response.data, message: response.message});
                 subscriber.complete();
             }
             else {
