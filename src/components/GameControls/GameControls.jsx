@@ -80,7 +80,7 @@ function GameControls() {
 
     const [coping, setCoping] = useState(false);
 
-    const isMobile = useMediaQuery({ query: '(max-width: 700px)' });
+    const isMobile = useMediaQuery({ query: '(max-width: 960px)' });
 
     const copyRoomCode = () => {
 
@@ -124,7 +124,7 @@ function GameControls() {
             }
         </div>
 
-        <div className="control-container">
+        <div className="control-container" style={{zIndex: 3000}}>
 
             { isMobile && <PlayerInfo className="rounded-2 mb-2 justify-content-center" style={{width: '350px'}} /> }
 
@@ -149,7 +149,7 @@ function GameControls() {
             <PlayerInfo />
         </div>}
         
-        {!isMobile && <div className="control-container" style={{alignItems: 'flex-end'}}>
+        {!isMobile && <div className="control-container" style={{width: 'fit-content', right: 0, zIndex: 3100}}>
 
             <div className="chat" style={{borderTopLeftRadius: '10px', overflow: "hidden"}}>
                 <Chat />
