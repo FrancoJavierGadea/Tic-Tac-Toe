@@ -3,32 +3,34 @@ import { Button } from "react-bootstrap";
 import styled from "styled-components";
 import Chat from "../Chat/Chat";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
+import PlayerInfo from "./PlayerInfo";
+import { useMediaQuery } from 'react-responsive'
 
 const StyledGameControls = styled.div`
 
-    position: fixed;
+    position: absolute;
     top: 0; bottom: 0;
     z-index: 2000;
     width: 100vw;
+    height: 100vh;
 
-    .room-info {
+    .control-container {
         position: absolute;
         bottom: 0;
         display: flex;
         justify-content: center;
+        align-items: center;
+        flex-direction: column;
         width: 100vw;
     }
-    .room-info > div {
+    .room-info {
         background-color: #2A2A4F;
         color: white;
         width: 350px;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        padding: 10px;
         text-align: center;
         box-shadow: 0px 0px 5px 0px rgba(89, 127, 253, 0.4);
     }
-    .room-code {
+    .room-info .room-code {
         color: black;
         background-color: #a8a8a8;
         width: fit-content;
@@ -38,36 +40,22 @@ const StyledGameControls = styled.div`
         position: relative;
     }
 
-    .player-info {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        min-width: 130px;
-        background-color: #2A2A4F;
-        color: white;
-        border-top-right-radius: 10px;
+    .chat {
         box-shadow: 0px 0px 5px 0px rgba(89, 127, 253, 0.4);
     }
-    .player-info i {
-        font-size: 18px;
+
+    .buttons {
+        position: absolute;
+        top: 10px; left: 10px;
+
+        .btn {
+            font-size: 28px;
+            border: 0;
+            display: block;
+        }
     }
 `;
 
-const StyledOutButton = styled(Button)`
-
-    position: absolute;
-    top: 10px; left: 10px;
-    font-size: 28px;
-    border: 0;
-`;
-
-const StyledResetButton = styled(Button)`
-
-    position: absolute;
-    top: 70px; left: 10px;
-    font-size: 28px;
-    border: 0;
-`;
 
 const StyledCopyButton = styled(Button)`
 
@@ -88,9 +76,11 @@ const StyledCopyButton = styled(Button)`
 
 function GameControls() {
 
-    const {room, playerTurn, player, leaveGame, startGame} = useContext(MultiplayerContext);
+    const {room, leaveGame, startGame, player} = useContext(MultiplayerContext);
 
     const [coping, setCoping] = useState(false);
+
+    const isMobile = useMediaQuery({ query: '(max-width: 700px)' });
 
     const copyRoomCode = () => {
 
@@ -102,18 +92,43 @@ function GameControls() {
         });
     }
 
+    const out= () => {
+
+        if(confirm('¿ Abandonar juego ?')){
+
+            leaveGame();
+        } 
+    }
+
+    const resetGame = () => {
+
+        if(confirm('¿ Resetear contadores ?')){
+
+            startGame({firstGame: true});
+        }
+    }   
+
     return (<StyledGameControls>
 
-        <StyledOutButton variant="outline-danger" title="Abandonar Sala" onClick={() => leaveGame()}>
-            <i className="bi bi-box-arrow-left"></i>
-        </StyledOutButton>
+        <div className="buttons" style={isMobile ? {top: '110px', left: '5px'} : undefined}>
 
-        <StyledResetButton variant="outline-secondary" title="Reiniciar Juego" onClick={() => startGame({firstGame: true})}>
-            <i className="bi bi-arrow-counterclockwise"></i>
-        </StyledResetButton>
+            <Button size={isMobile ? 'sm' : 'lg'} variant="outline-danger" title="Abandonar Sala" onClick={out}>
+                <i className="bi bi-box-arrow-left"></i>
+            </Button>
 
-        <div className="room-info">
-            <div>
+            {
+                player === 'player 1' &&
+                <Button size={isMobile ? 'sm' : 'lg'} variant="outline-secondary" title="Reiniciar Juego" onClick={resetGame}>
+                    <i className="bi bi-arrow-counterclockwise"></i>
+                </Button>
+            }
+        </div>
+
+        <div className="control-container">
+
+            { isMobile && <PlayerInfo className="rounded-2 mb-2 justify-content-center" style={{width: '350px'}} /> }
+
+            <div className={'room-info p-2 ' + (isMobile ? 'rounded' : 'rounded-top')}>
                 <h6 className="p-1">Comparte este codigo con un amigo</h6>
 
                 <h3 className="room-code">
@@ -124,15 +139,23 @@ function GameControls() {
                     </StyledCopyButton>
                 </h3>
             </div>
+
+            { isMobile && <div className="chat mt-2 rounded-top" style={{overflow: "hidden"}}>
+                <Chat style={{width: '350px'}} height="200px"/>
+            </div> }
         </div>
 
-        <div className="player-info p-2 d-flex align-items-center">
-            <h5 className="my-0 mx-2 pb-1">{player?.charAt(0).toUpperCase() + player?.slice(1)}:</h5>
-            { playerTurn === 'o' && <i className="bi bi-circle text-success"></i> }
-            { playerTurn === 'x' && <i className="bi bi-x-lg text-danger"></i> }
-        </div>
+        {!isMobile && <div className="control-container" style={{alignItems: 'flex-start'}}>
+            <PlayerInfo />
+        </div>}
+        
+        {!isMobile && <div className="control-container" style={{alignItems: 'flex-end'}}>
 
-        <Chat />
+            <div className="chat" style={{borderTopLeftRadius: '10px', overflow: "hidden"}}>
+                <Chat />
+            </div>
+
+        </div>}
 
     </StyledGameControls>);
 }

@@ -2,8 +2,8 @@ import { Observable, throwError } from "rxjs";
 import { io } from "socket.io-client";
 
 
-//const socket = io('https://tic-tac-toe-ntm9.onrender.com/').connect();
-const socket = io('http://localhost:3000').connect();
+const socket = io('https://tic-tac-toe-ntm9.onrender.com/').connect();
+//const socket = io('http://localhost:3000').connect();
 
 function listen(event){
 

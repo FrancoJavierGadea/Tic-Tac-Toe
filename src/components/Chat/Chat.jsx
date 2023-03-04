@@ -1,27 +1,36 @@
-import { useContext, useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Accordion, Button, Form, useAccordionButton } from "react-bootstrap";
 import styled from "styled-components";
 import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
-const StyledChat = styled.div`
+const StyledChat = styled(Accordion)`
+    
+    --bs-accordion-bg: #2A2A4F;
+    --bs-accordion-active-bg: #2A2A4F;
+    --bs-accordion-btn-color: #fff;
+    --bs-accordion-active-color: #fff;
 
-    width: 320px;
-    height: 250px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    border-top-left-radius: 10px;
+    --bs-accordion-btn-icon: var(--bs-accordion-btn-active-icon);
+    --bs-accordion-border-color: #0E60DB;
+    --bs-accordion-btn-focus-box-shadow: initial;
 
-    background-color: #000000;
-    box-shadow: 0px 0px 5px 0px rgba(89, 127, 253, 0.4);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    min-width: 300px;
+
+    .accordion-body {
+        --bs-accordion-body-padding-x: 0;
+        --bs-accordion-body-padding-y: 0;
+    }
+    .accordion-item {
+        --bs-accordion-bg: #000000;
+    }
+
 `;
 
 const MessagesContainer = styled.div`
 
-    height: calc(250px - 31px);
+    --chat-height: ${props => props.height || '250px'};  
+
+    height: calc(var(--chat-height) - 31px);
 
     color: white;
     padding: 5px 10px;
@@ -57,11 +66,20 @@ const MessagesContainer = styled.div`
 `;
 
 
-function Chat() {
+function Chat({style, height = '250px'}) {
 
     const {playerName, sendChatMessage, listenChatMessages} = useContext(MultiplayerContext);
 
     const [messages, setMessages] = useState([]);
+
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+
+    }, [messages]);
+
 
     useEffect(() => {
 
@@ -87,27 +105,38 @@ function Chat() {
         }
     }
 
-    return (<StyledChat>
+    return (<StyledChat flush style={style}>
 
-        <MessagesContainer>
-            {
-                messages.map(({name, message, type}, index) => {
+        <Accordion.Item eventKey="0">
 
-                    return <div className="message" key={'msg-'+index}>
-                        {
-                            type === 'notification' ? <span className="message-notification">{message}</span>
-                            : <>
-                                {name && <strong>{name}:</strong>}
-                                
-                                <span className="ps-1">{message}</span>
-                            </>
-                        }
-                    </div>;
-                })
-            }
-        </MessagesContainer>
+            <Accordion.Header>Chat</Accordion.Header>
 
-        <Form.Control type="text" className="rounded-0" placeholder="Escribe un mensaje" onKeyDown={handleKeyDown} />
+            <Accordion.Body>  
+                <MessagesContainer height={height}>
+                    {
+                        messages.map(({name, message, type}, index) => {
+
+                            return <div className="message" key={'msg-'+index}>
+                                {
+                                    type === 'notification' ? <span className="message-notification">{message}</span>
+                                    : <>
+                                        {name && <strong>{name}:</strong>}
+                                        
+                                        <span className="ps-1">{message}</span>
+                                    </>
+                                }
+                            </div>;
+                        })
+                    }
+                    <div ref={messagesEndRef}></div>
+                </MessagesContainer>
+
+                <Form.Control type="text" className="rounded-0" placeholder="Escribe un mensaje" onKeyDown={handleKeyDown} />
+            </Accordion.Body>
+
+        </Accordion.Item>  
+                 
+
     </StyledChat>);
 }
 

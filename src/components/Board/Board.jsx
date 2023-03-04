@@ -3,6 +3,8 @@ import Cell from "../Cell/Cell";
 
 const StyledBoard = styled.div`
 
+    width: fit-content;
+    margin: auto;
     padding: 10px;
 
     display: grid;

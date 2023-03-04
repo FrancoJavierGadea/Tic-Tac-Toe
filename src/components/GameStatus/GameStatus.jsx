@@ -6,7 +6,7 @@ import { MultiplayerContext } from "../Multiplayer/MultiplayerProvider";
 
 const StyledDiv = styled.div`
 
-    width: 450px;
+    max-width: 400px;
     margin: 20px auto;
     display: flex;
     justify-content: center;
@@ -29,7 +29,7 @@ const StyledDiv = styled.div`
 
     .counter {
         background-color: #333333;
-        min-width: 10%;
+        min-width: 12%;
         display: flex;
         justify-content: center;
         align-items: center;
